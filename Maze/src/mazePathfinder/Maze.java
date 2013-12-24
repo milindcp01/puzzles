@@ -1,4 +1,4 @@
-//change
+//change it
 package mazePathfinder;
 
 import java.util.ArrayList;
