@@ -13,6 +13,7 @@ class Cell {
 	private Cell cellRight;
 	private boolean isEnd;
 	private int x, y;
+	private int number;
 
 	public boolean isVisited() {
 		return isVisited;
@@ -90,6 +91,8 @@ class Cell {
 class InitCells {
 	public static Cell[][] CellMap = null;
 	public static List<Cell> cellList = new ArrayList<Cell>();
+	public static boolean isWayfound = false;
+	public static Cell node=null;
 
 	private static Cell getCellByXY(int x, int y) {
 		for (Cell c : cellList) {
@@ -98,6 +101,58 @@ class InitCells {
 			}
 		}
 		return null;
+	}
+	public static void findWay(List cells, Cell startPoint) {
+		Cell current = null;
+		node=current;
+		if(startPoint.isEnd()) {
+			System.out.println(startPoint.getX()+ " "+ startPoint.getY());
+			System.out.println("This is end.");
+			isWayfound = true;
+		
+		} else {
+		//	System.out.println(isWayfound);
+			Cell left = startPoint.getCellLeft();
+			Cell right = startPoint.getCellRight();
+			Cell down = startPoint.getCellDown();
+			Cell up = startPoint.getCellUp();
+			
+					
+			if(left != null && !left.isVisited && !isWayfound ) {
+				current = left;
+				//System.out.print(current.getX() +" "+current.getY());
+				System.out.print("L ");
+				current.isVisited=true;
+				findWay(cellList,current);
+			} else 
+				
+			if(up != null && !up.isVisited && !isWayfound) {
+				current = up;
+				System.out.print("U  ");
+				//System.out.println(current.getX() +" "+current.getY());
+				current.isVisited=true;
+				findWay(cellList,current);
+			} else
+			
+			if(down != null && !down.isVisited && !isWayfound ) {
+				current = down;
+				//System.out.print(current.getX() +" "+current.getY());
+				System.out.print("D ");
+				current.isVisited=true;
+				findWay(cellList,current);
+			} else
+
+			if(right != null && !right.isVisited && !isWayfound ) {
+				current = right;
+				//System.out.print(current.getX() +" "+current.getY());
+				System.out.print("R ");
+				current.isVisited=true;
+				findWay(cellList,current);
+			} 
+			
+		}
+	
+		
 	}
 
 	public static void createMap(int[][] array, int n, int m) {
@@ -145,8 +200,11 @@ class InitCells {
 				System.out.println("x=" + i + " y=" + j);
 				Cell c = getCellByXY(i, j);
 				if (c.isWall)
-					continue;
-
+					continue;		
+				
+				if (c.getX()==0 && c.getY()==0) {
+					c.setEnd(true);
+				}
 				if (c.getX() == 0) {
 					c.setCellUp(null);
 				} else if (!getCellByXY(c.getX() - 1, j).isWall) {
@@ -177,11 +235,26 @@ class InitCells {
 	}
 }
 
+class Runner implements Runnable {
+
+	@Override
+	public void run() {
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(116));
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}
 public class Maze {
 	public static void main(String[] args) {
 		int n = 13; // x axis
 		int m = 9; // y axis
-		int[][] arr = new int[][] { { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
+		int[][] arr = new int[][] { 
+				{ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
 				{ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 },
 				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 				{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0 },
@@ -191,7 +264,15 @@ public class Maze {
 				{ 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
 				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
 		InitCells.createMap(arr, n, m);
+		System.out.println(InitCells.cellList.get(116).getX());
+		System.out.println(InitCells.cellList.get(116).getY());
+		boolean yes =false;
+		 
+			 InitCells.findWay(InitCells.cellList, InitCells.cellList.get(116));
+		
+		
 		System.out.println("done");
+		
 	}
 
 }
