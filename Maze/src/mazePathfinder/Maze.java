@@ -14,6 +14,8 @@ class Cell {
 	private boolean isEnd;
 	private int x, y;
 	private int number;
+	private int pathLength = 0;
+	public Cell prevNode = null;
 
 	public boolean isVisited() {
 		return isVisited;
@@ -79,6 +81,14 @@ class Cell {
 		this.y = y;
 	}
 
+	public void setPathLength(int length) {
+		this.pathLength = length;
+	}
+
+	public void incPathLength() {
+		this.pathLength++;
+	}
+
 	public int getX() {
 		return this.x;
 	}
@@ -86,13 +96,29 @@ class Cell {
 	public int getY() {
 		return this.y;
 	}
+
+	public int getPathLength() {
+		return this.pathLength;
+	}
+
+	public Cell getPrevNode() {
+		return this.prevNode;
+	}
+
+	public void setPrevNode(Cell cell) {
+		this.prevNode = cell;
+	}
+
 }
 
 class InitCells {
 	public static Cell[][] CellMap = null;
 	public static List<Cell> cellList = new ArrayList<Cell>();
 	public static boolean isWayfound = false;
-	public static Cell node=null;
+	public static Cell node = null;
+
+	public static int exits;
+	public static StringBuilder way = new StringBuilder();
 
 	private static Cell getCellByXY(int x, int y) {
 		for (Cell c : cellList) {
@@ -102,60 +128,123 @@ class InitCells {
 		}
 		return null;
 	}
+
+	public static void sequenceCount(String s) {
+		char[] arr = s.toCharArray();
+		int i = 0, n = arr.length;
+		while (i < n) {
+			char c = arr[i];
+			int count = 0;
+			do {
+				++i;
+				++count;
+			} while (i < n && arr[i] == c);
+			System.out.print(count + "" + c);
+		}
+	}
+
 	public static void findWay(List cells, Cell startPoint) {
 		Cell current = null;
-		node=current;
-		if(startPoint.isEnd()) {
-			System.out.println(startPoint.getX()+ " "+ startPoint.getY());
-			System.out.println("This is end.");
+		startPoint.isVisited = true;
+
+		if (startPoint.isEnd()) {
+			// System.out.println(startPoint.getX()+ " "+ startPoint.getY());
+			// System.out.println("This is end.");
 			isWayfound = true;
-		
+
 		} else {
-		//	System.out.println(isWayfound);
+			// System.out.println(isWayfound);
 			Cell left = startPoint.getCellLeft();
 			Cell right = startPoint.getCellRight();
 			Cell down = startPoint.getCellDown();
 			Cell up = startPoint.getCellUp();
-			
-					
-			if(left != null && !left.isVisited && !isWayfound ) {
+
+			exits = 0;
+			// count number of possible exits
+			if (left != null && !left.isVisited && !isWayfound) {
+				exits++;
+			}
+			if (up != null && !up.isVisited && !isWayfound) {
+				exits++;
+			}
+			if (down != null && !down.isVisited && !isWayfound) {
+				exits++;
+			}
+			if (right != null && !right.isVisited && !isWayfound) {
+				exits++;
+			}
+			if (exits > 1) {
+				// set current cell as node
+				if (node != null) {
+					node.setPrevNode(node);
+				}
+				node = startPoint;
+				// System.out.print("node!");
+				node.setPathLength(0);
+			}
+
+			// System.out.println(exits+" Exits on this stage");
+			if (left != null && !left.isVisited && !isWayfound) {
 				current = left;
-				//System.out.print(current.getX() +" "+current.getY());
-				System.out.print("L ");
-				current.isVisited=true;
-				findWay(cellList,current);
-			} else 
-				
-			if(up != null && !up.isVisited && !isWayfound) {
-				current = up;
-				System.out.print("U  ");
-				//System.out.println(current.getX() +" "+current.getY());
-				current.isVisited=true;
-				findWay(cellList,current);
-			} else
-			
-			if(down != null && !down.isVisited && !isWayfound ) {
-				current = down;
-				//System.out.print(current.getX() +" "+current.getY());
-				System.out.print("D ");
-				current.isVisited=true;
-				findWay(cellList,current);
+				// System.out.print("L ");
+				current.isVisited = true;
+				if (node != null)
+					node.incPathLength();
+				way.append("L");
+				findWay(cellList, current);
 			} else
 
-			if(right != null && !right.isVisited && !isWayfound ) {
+			if (up != null && !up.isVisited && !isWayfound) {
+				current = up;
+				// System.out.print("U  ");
+				current.isVisited = true;
+				if (node != null)
+					node.incPathLength();
+				way.append("U");
+				findWay(cellList, current);
+
+			} else
+
+			if (down != null && !down.isVisited && !isWayfound) {
+				current = down;
+				// System.out.print("D ");
+				current.isVisited = true;
+				if (node != null)
+					node.incPathLength();
+				way.append("D");
+				findWay(cellList, current);
+
+			} else
+
+			if (right != null && !right.isVisited && !isWayfound) {
 				current = right;
-				//System.out.print(current.getX() +" "+current.getY());
-				System.out.print("R ");
-				current.isVisited=true;
-				findWay(cellList,current);
-			} 
-			
+				// System.out.print(current.getX() +" "+current.getY());
+				// System.out.print("R ");
+				current.isVisited = true;
+				if (node != null)
+					node.incPathLength();
+				way.append("R");
+				findWay(cellList, current);
+
+			}
+
+			// way blocked. continue from last saved node.
+			if (!isWayfound) {
+				System.out.println(node.getPathLength() + " wrong steps");
+				System.out.println(way);
+				System.out.println(way.length() - node.getPathLength() + 2);
+				way.delete(way.length() - node.getPathLength(), way.length());
+				findWay(cellList, node);
+				// TODO: problem here if we have blocked more than 2 node in sequense.
+				// need to find a way to roll back the node.
+			}
+
 		}
-	
-		
+
 	}
 
 	public static void createMap(int[][] array, int n, int m) {
+		InitCells.cellList = new ArrayList<Cell>();
 		int rows = array.length;
 		int cc = 0;
 		int h;
@@ -163,10 +252,9 @@ class InitCells {
 			for (int j = 0; j < n; j++) {
 				Cell c = new Cell();
 				int val = array[i][j];
-
 				c.setX(i);
 				c.setY(j);
-				System.out.print(val);
+				// System.out.print(val);
 				c.isVisited = false;
 
 				if (val == 0) {
@@ -175,7 +263,6 @@ class InitCells {
 					c.setCellLeft(null);
 					c.setCellRight(null);
 					c.setCellUp(null);
-
 					if (i == 0 && j == 0) {
 						c.setEnd(true);
 					}
@@ -188,7 +275,7 @@ class InitCells {
 				cellList.add(c);
 
 			}
-			System.out.println("");
+			// System.out.println("");
 		}
 
 		// here we set Neighbor of each cell
@@ -197,12 +284,12 @@ class InitCells {
 
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++) {
-				System.out.println("x=" + i + " y=" + j);
+				// System.out.println("x=" + i + " y=" + j);
 				Cell c = getCellByXY(i, j);
 				if (c.isWall)
-					continue;		
-				
-				if (c.getX()==0 && c.getY()==0) {
+					continue;
+
+				if (c.getX() == 0 && c.getY() == 0) {
 					c.setEnd(true);
 				}
 				if (c.getX() == 0) {
@@ -228,9 +315,10 @@ class InitCells {
 				} else if (!getCellByXY(i, c.getY() + 1).isWall) {
 					c.setCellRight(getCellByXY(i, c.getY() + 1));
 				}
+
 			}
 		}
-		System.out.println("stop " + cellList.size());
+		// System.out.println("stop " + cellList.size());
 
 	}
 }
@@ -247,14 +335,14 @@ class Runner implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
+
 public class Maze {
 	public static void main(String[] args) {
-		int n = 13; // x axis
-		int m = 9; // y axis
-		int[][] arr = new int[][] { 
-				{ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
+		int n = 33; // x axis
+		int m = 19; // y axis
+		int[][] arr = new int[][] { { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
 				{ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 },
 				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 				{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0 },
@@ -263,16 +351,86 @@ public class Maze {
 				{ 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1 },
 				{ 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
 				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
-		InitCells.createMap(arr, n, m);
-		System.out.println(InitCells.cellList.get(116).getX());
-		System.out.println(InitCells.cellList.get(116).getY());
-		boolean yes =false;
-		 
-			 InitCells.findWay(InitCells.cellList, InitCells.cellList.get(116));
-		
-		
-		System.out.println("done");
-		
+
+		int[][] arr2 = new int[][] {
+				{ 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
+						1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 },
+				{ 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+						1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
+				{ 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0,
+						1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1 },
+				{ 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
+						0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1 },
+				{ 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1 },
+				{ 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0,
+						0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
+				{ 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1,
+						1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+						0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+				{ 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0,
+						1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+				{ 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,
+						0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1 },
+				{ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
+						1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1 },
+				{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+						1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
+				{ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
+						1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+				{ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0,
+						1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1 },
+				{ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1,
+						1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
+				{ 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0,
+						0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1 },
+				{ 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0,
+						1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 },
+				{ 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
+						0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1 },
+				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+						1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 }
+
+		};
+
+		InitCells.createMap(arr2, n, m);
+		// System.out.println(InitCells.cellList.get(116).getX());
+		// System.out.println(InitCells.cellList.get(116).getY());
+		// boolean yes =false;
+
+		// from A
+		System.out.print("from A:");
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(32));
+		System.out.println(InitCells.cellList.get(32).getX());
+		System.out.println(InitCells.cellList.get(32).getY());
+
+		InitCells.sequenceCount(InitCells.way.toString());
+
+		// from B
+		System.out.print("from B ");
+		InitCells.createMap(arr2, n, m);
+		InitCells.way = new StringBuilder();
+		InitCells.isWayfound = false;
+		InitCells.node = null;
+
+		System.out.println(InitCells.cellList.get(594).getX());
+		System.out.println(InitCells.cellList.get(594).getY());
+
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(594));
+
+		InitCells.sequenceCount(InitCells.way.toString());
+
+		// from C
+		System.out.print(" ");
+		InitCells.createMap(arr2, n, m);
+		InitCells.way = new StringBuilder();
+		InitCells.isWayfound = false;
+		InitCells.node = null;
+
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(626));
+		InitCells.sequenceCount(InitCells.way.toString());
+
 	}
 
 }
