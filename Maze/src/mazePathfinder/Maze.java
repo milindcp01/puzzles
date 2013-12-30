@@ -254,7 +254,7 @@ class InitCells {
 				findWay(cellList, node);
 				// TODO: problem here if we have blocked more than 2 node in
 				// sequense.
-				// need to find a way to roll back the node.
+				// need to find a way to roll back to the correct node.
 			}
 
 		}
@@ -269,10 +269,9 @@ class InitCells {
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++) {
 				Cell c = new Cell();
-				int val = array[i][j];
+				int val = array[j][i];
 				c.setX(i);
 				c.setY(j);
-				// System.out.print(val);
 				c.isVisited = false;
 
 				if (val == 0) {
@@ -293,7 +292,7 @@ class InitCells {
 				cellList.add(c);
 
 			}
-			// System.out.println("");
+			 System.out.println("");
 		}
 
 		// here we set Neighbor of each cell
@@ -342,83 +341,85 @@ class InitCells {
 }
 
 public class Maze {
-	public static final String fileName = "data/1.txt";
+	public static final String fileName = "data/2.txt";
+
 	private static int getN(String fileName) {
 		File file = null;
 		InputStream fis = null;
-		int n =0;
+		int n = 0;
 		int m = 0;
-		
-		try { 
+
+		try {
 			file = new File(fileName);
 			fis = new FileInputStream(file);
 			Scanner in = new Scanner(file);
-		
+
 			n = in.nextInt();
-			m = in.nextInt();		 
+			m = in.nextInt();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
 			try {
 				fis.close();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 		}
-		return n; 
+		return n;
 	}
+
 	private static int getM(String fileName) {
 		File file = null;
 		InputStream fis = null;
-		int n =0;
+		int n = 0;
 		int m = 0;
-		
-		try { 
+
+		try {
 			file = new File(fileName);
 			fis = new FileInputStream(file);
 			Scanner in = new Scanner(file);
-		
+
 			n = in.nextInt();
-			m = in.nextInt();		 
+			m = in.nextInt();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
 			try {
 				fis.close();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 		}
-		return m; 
-	}	
-	
+		return m;
+	}
+
 	private static int[][] getInputData(String fileName) {
 		InputStream fis = null;
 		int[][] data = null;
 		int m = 0;
 		int n = 0;
-		String line=null;
+		String line = null;
 		try {
 			File file = new File(fileName);
-			fis = new FileInputStream(file);			 
+			fis = new FileInputStream(file);
 			Scanner in = new Scanner(file);
 			n = in.nextInt();
-			m = in.nextInt();			 
-			System.out.println(n+" "+m);
-			data= new int[n][m];
-			int j =0;
-			line = in.nextLine();			
+			m = in.nextInt();
+			System.out.println(n + " " + m);
+			data = new int[n][m];
+			int j = 0;
+			line = in.nextLine();
 			while (in.hasNextLine()) {
-				System.out.println("line "+j);
-				line = in.next();				
-				for(int i=0;i<line.length();i++) {
-					int k = Integer.parseInt(String.valueOf(line.charAt(i)));					
-					System.out.println(k);
-					data[i][j]=k;
-				}				
-				j++;				
+				System.out.println("line " + j);
+				line = in.next();
+				for (int i = 0; i < line.length(); i++) {
+					int k = Integer.parseInt(String.valueOf(line.charAt(i)));
+					System.out.print(k);
+					data[i][j] = k;
+				}
+				j++;
 			}
 			System.out.println("done parse");
 		} catch (IOException ioe) {
@@ -427,16 +428,17 @@ public class Maze {
 			try {
 				fis.close();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 		}
-		
+
 		return data;
 	}
+
 	public static void main(String[] args) {
 		getInputData(fileName);
-				
+
 		int n = getN(fileName); // x axis
 		int m = getM(fileName); // y axis
 		int[][] arr = new int[][] { { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
@@ -490,44 +492,50 @@ public class Maze {
 						1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 }
 
 		};
-		System.out.println("getN="+getN(fileName));
-		System.out.println("getM="+getM(fileName));
-		
-		InitCells.createMap(getInputData(fileName), getN(fileName), getM(fileName));
+		System.out.println("getN=" + getN(fileName));
+		System.out.println("getM=" + getM(fileName));
+
+		InitCells.createMap(getInputData(fileName), getN(fileName),
+				getM(fileName));
 		// System.out.println(InitCells.cellList.get(116).getX());
 		// System.out.println(InitCells.cellList.get(116).getY());
 		// boolean yes =false;
 
 		// from A
 		System.out.print("from A:");
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(32));
-		System.out.println(InitCells.cellList.get(32).getX());
-		System.out.println(InitCells.cellList.get(32).getY());
+		System.out.println("x="+InitCells.cellList.get(getN(fileName)-1).getX());
+		System.out.println("y="+InitCells.cellList.get(getN(fileName)-1).getY());
+
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(getN(fileName)-1));
+		System.out.println("x="+InitCells.cellList.get(getN(fileName)-1).getX());
+		System.out.println("y="+InitCells.cellList.get(getN(fileName)-1).getY());
+
+		InitCells.sequenceCount(InitCells.way.toString());
+
+		// from C
+		System.out.print("from C ");
+		InitCells.createMap(getInputData(fileName), getN(fileName),
+				getM(fileName));
+		InitCells.way = new StringBuilder();
+		InitCells.isWayfound = false;
+		InitCells.node = null;
+
+		System.out.println(InitCells.cellList.get(getN(fileName)*getM(fileName)-1).getX());
+		System.out.println(InitCells.cellList.get(getN(fileName)*getM(fileName)-1).getY());
+
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(getN(fileName)*getM(fileName)-1));
 
 		InitCells.sequenceCount(InitCells.way.toString());
 
 		// from B
 		System.out.print("from B ");
-		InitCells.createMap(arr2, n, m);
+		InitCells.createMap(getInputData(fileName), getN(fileName),
+				getM(fileName));
 		InitCells.way = new StringBuilder();
 		InitCells.isWayfound = false;
 		InitCells.node = null;
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(getN(fileName)*getM(fileName)-getN(fileName)));
 
-		System.out.println(InitCells.cellList.get(594).getX());
-		System.out.println(InitCells.cellList.get(594).getY());
-
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(594));
-
-		InitCells.sequenceCount(InitCells.way.toString());
-
-		// from C
-		System.out.print(" ");
-		InitCells.createMap(arr2, n, m);
-		InitCells.way = new StringBuilder();
-		InitCells.isWayfound = false;
-		InitCells.node = null;
-
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(626));
 		InitCells.sequenceCount(InitCells.way.toString());
 
 	}
