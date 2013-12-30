@@ -11,11 +11,15 @@
  * status: in progress.  
  */
 
-
 package mazePathfinder;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 class Cell {
 	boolean isVisited;
@@ -248,7 +252,8 @@ class InitCells {
 				System.out.println(way.length() - node.getPathLength() + 2);
 				way.delete(way.length() - node.getPathLength(), way.length());
 				findWay(cellList, node);
-				// TODO: problem here if we have blocked more than 2 node in sequense.
+				// TODO: problem here if we have blocked more than 2 node in
+				// sequense.
 				// need to find a way to roll back the node.
 			}
 
@@ -336,25 +341,104 @@ class InitCells {
 	}
 }
 
-class Runner implements Runnable {
-
-	@Override
-	public void run() {
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(116));
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-}
-
 public class Maze {
+	public static final String fileName = "data/1.txt";
+	private static int getN(String fileName) {
+		File file = null;
+		InputStream fis = null;
+		int n =0;
+		int m = 0;
+		
+		try { 
+			file = new File(fileName);
+			fis = new FileInputStream(file);
+			Scanner in = new Scanner(file);
+		
+			n = in.nextInt();
+			m = in.nextInt();		 
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		return n; 
+	}
+	private static int getM(String fileName) {
+		File file = null;
+		InputStream fis = null;
+		int n =0;
+		int m = 0;
+		
+		try { 
+			file = new File(fileName);
+			fis = new FileInputStream(file);
+			Scanner in = new Scanner(file);
+		
+			n = in.nextInt();
+			m = in.nextInt();		 
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		return m; 
+	}	
+	
+	private static int[][] getInputData(String fileName) {
+		InputStream fis = null;
+		int[][] data = null;
+		int m = 0;
+		int n = 0;
+		String line=null;
+		try {
+			File file = new File(fileNmae);
+			fis = new FileInputStream(file);			 
+			Scanner in = new Scanner(file);
+			n = in.nextInt();
+			m = in.nextInt();			 
+			System.out.println(n+" "+m);
+			data= new int[n][m];
+			int j =0;
+			line = in.nextLine();			
+			while (in.hasNextLine()) {
+				System.out.println("line "+j);
+				line = in.next();				
+				for(int i=0;i<line.length();i++) {
+					int k = Integer.parseInt(String.valueOf(line.charAt(i)));					
+					System.out.println(k);
+					data[i][j]=k;
+				}				
+				j++;				
+			}
+			System.out.println("done parse");
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		
+		return data;
+	}
 	public static void main(String[] args) {
-		int n = 33; // x axis
-		int m = 19; // y axis
+		getInputData(new File(fileName));
+				
+		int n = getN(fileName); // x axis
+		int m = getM(fileName); // y axis
 		int[][] arr = new int[][] { { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
 				{ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 },
 				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -407,7 +491,7 @@ public class Maze {
 
 		};
 
-		InitCells.createMap(arr2, n, m);
+		InitCells.createMap(getInputData(new File("data/1.txt")), n, m);
 		// System.out.println(InitCells.cellList.get(116).getX());
 		// System.out.println(InitCells.cellList.get(116).getY());
 		// boolean yes =false;
