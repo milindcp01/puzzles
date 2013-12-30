@@ -1,4 +1,17 @@
-//change it  yahoo!
+/*
+ * This program is designed to solve Maze problem:
+ * Program finds optimal way from A, B, C points  to X:  
+ *  X1110A
+ *  100111
+ *  B1111C
+ *  
+ *  example: format of solution: A: D1L2U1L3 which means step Down 1 times, 
+ *  then move 2 times left etc. until reachX point. 
+ * author: Boris Wainberg
+ * status: in progress.  
+ */
+
+
 package mazePathfinder;
 
 import java.util.ArrayList;
