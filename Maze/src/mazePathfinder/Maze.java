@@ -401,7 +401,7 @@ public class Maze {
 		int n = 0;
 		String line=null;
 		try {
-			File file = new File(fileNmae);
+			File file = new File(fileName);
 			fis = new FileInputStream(file);			 
 			Scanner in = new Scanner(file);
 			n = in.nextInt();
@@ -435,7 +435,7 @@ public class Maze {
 		return data;
 	}
 	public static void main(String[] args) {
-		getInputData(new File(fileName));
+		getInputData(fileName);
 				
 		int n = getN(fileName); // x axis
 		int m = getM(fileName); // y axis
@@ -490,8 +490,10 @@ public class Maze {
 						1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 }
 
 		};
-
-		InitCells.createMap(getInputData(new File("data/1.txt")), n, m);
+		System.out.println("getN="+getN(fileName));
+		System.out.println("getM="+getM(fileName));
+		
+		InitCells.createMap(getInputData(fileName), getN(fileName), getM(fileName));
 		// System.out.println(InitCells.cellList.get(116).getX());
 		// System.out.println(InitCells.cellList.get(116).getY());
 		// boolean yes =false;
