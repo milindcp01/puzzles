@@ -18,8 +18,35 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+
+
+/*
+ *  Simple stack implementation based on LinkedList
+ */
+
+class NodeStack<Cell> {	
+	private LinkedList<Cell> listNodes =null;
+		
+	public NodeStack() {
+		listNodes = new LinkedList<Cell>();
+	}
+	
+	public int getSize() {
+		return listNodes.size();
+	}
+	public Cell pop() {
+		return listNodes.removeFirst();		
+	}
+	public void push(Cell c) {
+		listNodes.addFirst(c);		
+	}
+	public Cell top() {
+		return listNodes.getFirst();
+	}
+}
 
 class Cell {
 	boolean isVisited;
@@ -133,6 +160,8 @@ class InitCells {
 	public static List<Cell> cellList = new ArrayList<Cell>();
 	public static boolean isWayfound = false;
 	public static Cell node = null;
+	//static List <Cell> nodes = new LinkedList<Cell>();
+	public static NodeStack<Cell> nodes = new NodeStack<>();
 
 	public static int exits;
 	public static StringBuilder way = new StringBuilder();
@@ -163,6 +192,7 @@ class InitCells {
 	public static void findWay(List cells, Cell startPoint) {
 		Cell current = null;
 		startPoint.isVisited = true;
+		  
 
 		if (startPoint.isEnd()) {
 			// System.out.println(startPoint.getX()+ " "+ startPoint.getY());
@@ -192,15 +222,23 @@ class InitCells {
 			}
 			if (exits > 1) {
 				// set current cell as node
-				if (node != null) {
-					node.setPrevNode(node);
+				if (nodes.top() != null) {
+					nodes.push(node);
+				//	node.setPrevNode(node);
+					
+				//	node.setPrevNode(nodes.get(index));
+					
+				//	node.setPrevNode(cell);
 				}
 				node = startPoint;
-				// System.out.print("node!");
+				 System.out.println("node!");
 				node.setPathLength(0);
 			}
-
-			// System.out.println(exits+" Exits on this stage");
+			
+			 System.out.println(exits+" Exits on this stage");
+			 System.out.println("Current nodes list size = "+nodes.getSize());
+			 System.out.println("x="+nodes.top().getX());
+			 System.out.println("y="+nodes.top().getY());
 			if (left != null && !left.isVisited && !isWayfound) {
 				current = left;
 				// System.out.print("L ");
@@ -250,8 +288,9 @@ class InitCells {
 				System.out.println(node.getPathLength() + " wrong steps");
 				System.out.println(way);
 				System.out.println(way.length() - node.getPathLength() + 2);
+				 nodes.pop();
 				way.delete(way.length() - node.getPathLength(), way.length());
-				findWay(cellList, node);
+				findWay(cellList, nodes.top());
 				// TODO: problem here if we have blocked more than 2 node in
 				// sequense.
 				// need to find a way to roll back to the correct node.
@@ -341,7 +380,7 @@ class InitCells {
 }
 
 public class Maze {
-	public static final String fileName = "data/2.txt";
+	public static final String fileName = "data/1.txt";
 
 	private static int getN(String fileName) {
 		File file = null;
@@ -436,70 +475,17 @@ public class Maze {
 		return data;
 	}
 
-	public static void main(String[] args) {
-		getInputData(fileName);
+	public static void main(String[] args) {	
 
 		int n = getN(fileName); // x axis
 		int m = getM(fileName); // y axis
-		int[][] arr = new int[][] { { 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
-				{ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 },
-				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-				{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0 },
-				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1 },
-				{ 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1 },
-				{ 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1 },
-				{ 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
-				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
-
-		int[][] arr2 = new int[][] {
-				{ 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
-						1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 },
-				{ 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-						1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
-				{ 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0,
-						1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1 },
-				{ 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
-						0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1 },
-				{ 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-						1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1 },
-				{ 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 },
-				{ 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1,
-						1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-				{ 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0,
-						1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
-				{ 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,
-						0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1 },
-				{ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
-						1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1 },
-				{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,
-						1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
-				{ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-						1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
-				{ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-						1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1 },
-				{ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1,
-						1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1 },
-				{ 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0,
-						0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1 },
-				{ 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0,
-						1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 },
-				{ 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
-						0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1 },
-				{ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-						1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 }
-
-		};
+		
 		System.out.println("getN=" + getN(fileName));
 		System.out.println("getM=" + getM(fileName));
 
 		InitCells.createMap(getInputData(fileName), getN(fileName),
 				getM(fileName));
-		// System.out.println(InitCells.cellList.get(116).getX());
-		// System.out.println(InitCells.cellList.get(116).getY());
-		// boolean yes =false;
+		
 
 		// from A
 		System.out.print("from A:");
