@@ -8,7 +8,7 @@
  *  example: format of solution: A: D1L2U1L3 which means step Down 1 times, 
  *  then move 2 times left etc. until reachX point. 
  * author: Boris Wainberg
- * status: in progress.  
+ * status: done.  
  */
 
 package mazePathfinder;
@@ -22,29 +22,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-
 /*
  *  Simple stack implementation based on LinkedList
  */
 
-class NodeStack<Cell> {	
-	private LinkedList<Cell> listNodes =null;
-		
+class NodeStack<Cell> {
+	private static LinkedList listNodes = null;
+
 	public NodeStack() {
 		listNodes = new LinkedList<Cell>();
 	}
-	
+
 	public int getSize() {
 		return listNodes.size();
 	}
+
 	public Cell pop() {
-		return listNodes.removeFirst();		
+		return (Cell) listNodes.removeFirst();
 	}
+
 	public void push(Cell c) {
-		listNodes.addFirst(c);		
+		listNodes.addFirst(c);
 	}
+
 	public Cell top() {
-		return listNodes.getFirst();
+		if (listNodes.size() > 0) {
+			return (Cell) listNodes.getFirst();
+		} else
+			return null;
 	}
 }
 
@@ -160,9 +165,7 @@ class InitCells {
 	public static List<Cell> cellList = new ArrayList<Cell>();
 	public static boolean isWayfound = false;
 	public static Cell node = null;
-	//static List <Cell> nodes = new LinkedList<Cell>();
-	public static NodeStack<Cell> nodes = new NodeStack<>();
-
+	public static NodeStack<Cell> nodes = new NodeStack<Cell>();
 	public static int exits;
 	public static StringBuilder way = new StringBuilder();
 
@@ -192,15 +195,10 @@ class InitCells {
 	public static void findWay(List cells, Cell startPoint) {
 		Cell current = null;
 		startPoint.isVisited = true;
-		  
 
 		if (startPoint.isEnd()) {
-			// System.out.println(startPoint.getX()+ " "+ startPoint.getY());
-			// System.out.println("This is end.");
 			isWayfound = true;
-
 		} else {
-			// System.out.println(isWayfound);
 			Cell left = startPoint.getCellLeft();
 			Cell right = startPoint.getCellRight();
 			Cell down = startPoint.getCellDown();
@@ -222,82 +220,53 @@ class InitCells {
 			}
 			if (exits > 1) {
 				// set current cell as node
-				if (nodes.top() != null) {
-					nodes.push(node);
-				//	node.setPrevNode(node);
-					
-				//	node.setPrevNode(nodes.get(index));
-					
-				//	node.setPrevNode(cell);
-				}
+				nodes.push(startPoint);
 				node = startPoint;
-				 System.out.println("node!");
-				node.setPathLength(0);
+				nodes.top().setPathLength(0);
 			}
-			
-			 System.out.println(exits+" Exits on this stage");
-			 System.out.println("Current nodes list size = "+nodes.getSize());
-			 System.out.println("x="+nodes.top().getX());
-			 System.out.println("y="+nodes.top().getY());
+
 			if (left != null && !left.isVisited && !isWayfound) {
 				current = left;
-				// System.out.print("L ");
 				current.isVisited = true;
-				if (node != null)
-					node.incPathLength();
+				if (nodes.top() != null)
+					nodes.top().incPathLength();
 				way.append("L");
 				findWay(cellList, current);
 			} else
 
 			if (up != null && !up.isVisited && !isWayfound) {
 				current = up;
-				// System.out.print("U  ");
 				current.isVisited = true;
-				if (node != null)
-					node.incPathLength();
+				if (nodes.top() != null)
+					nodes.top().incPathLength();
 				way.append("U");
 				findWay(cellList, current);
-
 			} else
 
 			if (down != null && !down.isVisited && !isWayfound) {
 				current = down;
-				// System.out.print("D ");
 				current.isVisited = true;
-				if (node != null)
-					node.incPathLength();
+				if (nodes.top() != null)
+					nodes.top().incPathLength();
 				way.append("D");
 				findWay(cellList, current);
 
-			} else
-
-			if (right != null && !right.isVisited && !isWayfound) {
+			} else if (right != null && !right.isVisited && !isWayfound) {
 				current = right;
-				// System.out.print(current.getX() +" "+current.getY());
-				// System.out.print("R ");
 				current.isVisited = true;
-				if (node != null)
-					node.incPathLength();
+				if (nodes.top() != null)
+					nodes.top().incPathLength();
 				way.append("R");
 				findWay(cellList, current);
-
 			}
 
 			// way blocked. continue from last saved node.
 			if (!isWayfound) {
-				System.out.println(node.getPathLength() + " wrong steps");
-				System.out.println(way);
-				System.out.println(way.length() - node.getPathLength() + 2);
-				 nodes.pop();
-				way.delete(way.length() - node.getPathLength(), way.length());
-				findWay(cellList, nodes.top());
-				// TODO: problem here if we have blocked more than 2 node in
-				// sequense.
-				// need to find a way to roll back to the correct node.
+				way.delete(way.length() - nodes.top().getPathLength(),
+						way.length());
+				findWay(cellList, nodes.pop());
 			}
-
 		}
-
 	}
 
 	public static void createMap(int[][] array, int n, int m) {
@@ -312,7 +281,6 @@ class InitCells {
 				c.setX(i);
 				c.setY(j);
 				c.isVisited = false;
-
 				if (val == 0) {
 					c.isWall = true;
 					c.setCellDown(null);
@@ -326,12 +294,9 @@ class InitCells {
 				} else {
 					c.isWall = false;
 					c.isVisited = false;
-
 				}
 				cellList.add(c);
-
 			}
-			 System.out.println("");
 		}
 
 		// here we set Neighbor of each cell
@@ -340,11 +305,9 @@ class InitCells {
 
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++) {
-				// System.out.println("x=" + i + " y=" + j);
 				Cell c = getCellByXY(i, j);
 				if (c.isWall)
 					continue;
-
 				if (c.getX() == 0 && c.getY() == 0) {
 					c.setEnd(true);
 				}
@@ -353,29 +316,23 @@ class InitCells {
 				} else if (!getCellByXY(c.getX() - 1, j).isWall) {
 					c.setCellUp(getCellByXY(c.getX() - 1, j));
 				}
-
 				if (c.getX() == m - 1) {
 					c.setCellDown(null);
 				} else if (!getCellByXY(c.getX() + 1, j).isWall) {
 					c.setCellDown(getCellByXY(c.getX() + 1, j));
 				}
-
 				if (c.getY() == 0) {
 					c.setCellLeft(null);
 				} else if (!getCellByXY(i, c.getY() - 1).isWall) {
 					c.setCellLeft(getCellByXY(i, c.getY() - 1));
 				}
-
 				if (c.getY() == n - 1) {
 					c.setCellRight(null);
 				} else if (!getCellByXY(i, c.getY() + 1).isWall) {
 					c.setCellRight(getCellByXY(i, c.getY() + 1));
 				}
-
 			}
 		}
-		// System.out.println("stop " + cellList.size());
-
 	}
 }
 
@@ -446,21 +403,17 @@ public class Maze {
 			Scanner in = new Scanner(file);
 			n = in.nextInt();
 			m = in.nextInt();
-			System.out.println(n + " " + m);
 			data = new int[n][m];
 			int j = 0;
 			line = in.nextLine();
 			while (in.hasNextLine()) {
-				System.out.println("line " + j);
 				line = in.next();
 				for (int i = 0; i < line.length(); i++) {
 					int k = Integer.parseInt(String.valueOf(line.charAt(i)));
-					System.out.print(k);
 					data[i][j] = k;
 				}
 				j++;
 			}
-			System.out.println("done parse");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
@@ -471,59 +424,42 @@ public class Maze {
 				e.printStackTrace();
 			}
 		}
-
 		return data;
 	}
 
-	public static void main(String[] args) {	
+	private static void newEdge() {
+		int n = getN(fileName);
+		int m = getM(fileName);
 
-		int n = getN(fileName); // x axis
-		int m = getM(fileName); // y axis
-		
-		System.out.println("getN=" + getN(fileName));
-		System.out.println("getM=" + getM(fileName));
-
-		InitCells.createMap(getInputData(fileName), getN(fileName),
-				getM(fileName));
-		
-
-		// from A
-		System.out.print("from A:");
-		System.out.println("x="+InitCells.cellList.get(getN(fileName)-1).getX());
-		System.out.println("y="+InitCells.cellList.get(getN(fileName)-1).getY());
-
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(getN(fileName)-1));
-		System.out.println("x="+InitCells.cellList.get(getN(fileName)-1).getX());
-		System.out.println("y="+InitCells.cellList.get(getN(fileName)-1).getY());
-
-		InitCells.sequenceCount(InitCells.way.toString());
-
-		// from C
-		System.out.print("from C ");
-		InitCells.createMap(getInputData(fileName), getN(fileName),
-				getM(fileName));
+		InitCells.createMap(getInputData(fileName), n, m);
 		InitCells.way = new StringBuilder();
 		InitCells.isWayfound = false;
 		InitCells.node = null;
+	}
 
-		System.out.println(InitCells.cellList.get(getN(fileName)*getM(fileName)-1).getX());
-		System.out.println(InitCells.cellList.get(getN(fileName)*getM(fileName)-1).getY());
+	public static void main(String[] args) {
+		// TODO: main is ugly. leave as is until redesign.
 
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(getN(fileName)*getM(fileName)-1));
+		int n = getN(fileName);
+		int m = getM(fileName);
+		InitCells.createMap(getInputData(fileName), n, m);
 
+		// from A
+		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(n - 1));
 		InitCells.sequenceCount(InitCells.way.toString());
 
 		// from B
-		System.out.print("from B ");
-		InitCells.createMap(getInputData(fileName), getN(fileName),
-				getM(fileName));
-		InitCells.way = new StringBuilder();
-		InitCells.isWayfound = false;
-		InitCells.node = null;
-		InitCells.findWay(InitCells.cellList, InitCells.cellList.get(getN(fileName)*getM(fileName)-getN(fileName)));
+		System.out.print(" ");
+		newEdge();
+		InitCells
+				.findWay(InitCells.cellList, InitCells.cellList.get(n * m - n));
 
 		InitCells.sequenceCount(InitCells.way.toString());
-
+		// from C
+		System.out.print(" ");
+		newEdge();
+		InitCells
+				.findWay(InitCells.cellList, InitCells.cellList.get(n * m - 1));
+		InitCells.sequenceCount(InitCells.way.toString());
 	}
-
 }
