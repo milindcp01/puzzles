@@ -1,3 +1,3 @@
-Maze pathfinder
+Java experimints and interesting things.
 ====
-This is the solution for Maze pathfinder problem: http://codeabbey.com/index/task_view/maze-pathfinder
+This repo is for useful and inetersting Java Core programs.
