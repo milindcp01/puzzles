@@ -1,5 +1,7 @@
 import java.util.Random;
 
+// WARNING! current solution has major defect (optimal ways may be ignored)
+
 public class Pawn {
 	public static int[][] playGround = generateMatrix(50, 50);
 
