@@ -8,13 +8,13 @@ public class Expression {
 		String exp1 = "))((";
 		System.out.println(isValidExpression(exp1));
 		String exp2 = "()(())";
-		System.out.println(isValidExpression(exp2));		
+		System.out.println(isValidExpression(exp2));
 	}
 
 	public static boolean isValidExpression(String expString) {
 		return isValidBrackets(expString);
 	}
-	
+
 	private enum Operation {
 		PLUS("+") {
 			@Override
@@ -48,8 +48,8 @@ public class Expression {
 	}
 
 	/*
-	 * function checks expression on nested brackets correction
-	 * 
+	 * function checks expression on nested brackets correction.
+	 *
 	 * @param expression
 	 */
 	private static boolean isValidBrackets(String exp) {
@@ -70,5 +70,5 @@ public class Expression {
 		}
 		return (counter == elements.length && bracketCount != 0) ? false : true;
 	}
-	
+
 }
