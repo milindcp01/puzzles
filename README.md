@@ -1,3 +1,3 @@
-Java experiments and interesting things.
+sandbox
 ====
-This repo is for useful and inetersting Java Core programs.
+This repo is for useful and inetersting algorythms, solution for some codility tasks, etc.
