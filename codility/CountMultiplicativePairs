@@ -1,0 +1,143 @@
+import java.math.BigDecimal;
+import java.util.Random;
+
+
+// 63/100 :(
+public class CountMultiplicativePairs {
+
+	public static void main(String[] args) {
+
+		Random random = new Random();
+		int size = 100_0;
+
+		int[] b1 = new int[size];
+		int[] a1 = new int[size];
+
+		for (int t = 0; t < size; t++) {
+			a1[t] = t;
+			b1[t] = random.nextInt(999_999);
+		}
+
+		int[] a = { 1, 1 };
+		int[] b = { 500_001, 000 };
+		long before = System.nanoTime();
+		System.out.println(solution(a, b));
+		long after = System.nanoTime();
+		System.out.println("time : " + (after - before) / 1e9);
+	}
+
+	public static int solution(int[] A, int[] B) {
+		// write your code in Java SE 7
+		int res = 0;
+		int size = A.length;
+
+		double[] c = new double[A.length];
+
+		for (int i = 0; i < size; i++) {
+			c[i] = A[i] + (double) B[i] / (double) 1_000_000;
+		}
+
+		if (size < 2)
+			return 0;
+
+		if (size < 3) {
+			if ((BigDecimal.valueOf(c[0]).multiply(BigDecimal.valueOf(c[1])))
+					.compareTo(BigDecimal.valueOf(c[0]).add(
+							BigDecimal.valueOf(c[1]))) >= 0) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		for (int i = 1; i < size; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if (c[i] * c[j] >= c[i] + c[j]) {
+					res += size - j;
+					if (res > 1_000_000_000)
+						return 1_000_000_000;
+					break;
+
+				}
+			}
+		}
+
+		return res;
+
+	}
+
+	public static int soluton2(int[] A, int[] B) {
+		int res = 0;
+		int size = A.length;
+
+		// System.out.println("called " + size);
+		// List<BigDecimal> sumList = new ArrayList<BigDecimal>();
+		BigDecimal[] sumList = new BigDecimal[A.length];
+
+
+		BigDecimal t = null;
+
+		if (size < 2)
+			return 0;
+
+		for (int i = 0; i < size; i++) {
+			BigDecimal t2 = new BigDecimal(B[i]).divide(BigDecimal
+					.valueOf(1_000_000));
+			// BigDecimal t1 = new BigDecimal(A[i]);
+			BigDecimal t1 = BigDecimal.valueOf(A[i], 0);
+
+			t = t1.add(t2);
+			// System.out.println("t=" + t);
+			// c[i] = t.doubleValue();
+			sumList[i] = t;
+		}
+
+		if (size < 3) {
+			if (((sumList[0]).multiply(sumList[1]).compareTo(
+					(sumList[0].add(sumList[1]))) >= 0)) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
+		// for (int i = 1; i < size; i++) {
+		// if
+		// (sumList.get(i).compareTo(sumList.get(1).multiply(BigDecimal.valueOf(2)))
+		// >= 0) {
+		// System.out.println("bound="+i);
+		// BigInteger k =BigInteger.ONE;
+		//
+		//
+		// res = (size -i)*(i-1)+1;
+		//
+		//
+		// //res = ((size - i)*(i-1)+(size - i-1)*(size-i-1));
+		// System.out.print("res "+res);
+		//
+		// if(res>1_000_000_000) return 1_000_000_000;
+		// break;
+		// }
+		// }
+
+		for (int i = 1; i < size; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if (sumList[j].compareTo(sumList[i].multiply(BigDecimal
+						.valueOf(2))) > 0)
+					break;
+
+				if (((sumList[i]).multiply(sumList[j]).compareTo(
+						(sumList[i].add(sumList[j]))) >= 0)) {
+					res += size - j;
+					if (res > 1_000_000_000)
+						return 1_000_000_000;
+					// System.out.println("i=" + i + " res =" + res);
+					break;
+				}
+			}
+		}
+
+		// System.out.print(res);
+		return res;
+	}
+
+}
