@@ -1,0 +1,23 @@
+public class Chockolate {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println();
+		solution(10, 4);
+
+	}
+
+	public static int solution(int N, int M) {
+		int lcm = N * M / gcd(N, M);
+		return lcm / M;
+	}
+
+	public static int gcd(int x, int y) {
+		while (y != 0) {
+			int z = x % y;
+			x = y;
+			y = z;
+		}
+		return x;
+	}
+}
