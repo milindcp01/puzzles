@@ -8,8 +8,13 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import javax.naming.InsufficientResourcesException;
+
+/* This is kind of simulation of two bank accounts. Program below transfers money between them
+in multithread environment
+*
+*/
+
 
 class Transfer implements Callable<Boolean> {
 	Account acc1 = null;
