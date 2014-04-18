@@ -1,9 +1,5 @@
 package sort;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /*
  * Recursive Merge sort algoruthm 
  * time complexity: O(n*long(n)) in worst case
