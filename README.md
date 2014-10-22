@@ -11,4 +11,4 @@ This repo is for useful and inetersting algorythms, solution for some codility t
   ga('create', 'UA-55987200-1', 'auto');
   ga('send', 'pageview');
 
-</script>
+</script> 
